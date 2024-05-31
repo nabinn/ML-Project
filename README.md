@@ -35,7 +35,8 @@ source activate myenv && \
 cd chatbot && streamlit run app.py
 ```
 
-Note: you need to do this every time you want to run the application.
+    Note: You need to do this every time to run the application. Step 1 can be skipped once the virtual environment is created and necessary packages are installed. 
+
 ---
 Notes:
 - It downloads the Hugging face models and caches inside the `models` folders when you run the application for the first time. So, the first run will be slower. In subsequent runs, it will simply load the downloaded models stored locally.
