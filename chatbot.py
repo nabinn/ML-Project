@@ -1,12 +1,52 @@
 import os
+import time
 from PIL import Image
 import streamlit as st
-from transformers import BlipProcessor, BlipForQuestionAnswering
-from transformers import ViLTProcessor, ViLTForQuestionAnswering
+from transformers import BlipProcessor, BlipForQuestionAnswering, ViltProcessor, ViltForQuestionAnswering
 
 # Create the models directory if it doesn't exist
 if not os.path.exists("models"):
     os.makedirs("models")
+
+
+# Create the models directory if it doesn't exist
+if not os.path.exists("models"):
+    os.makedirs("models")
+
+# Function to check and download models
+def check_and_download_models():
+    status_placeholder = st.empty()
+    status_placeholder.info("Checking and downloading models...")
+
+    # Check BLIP model
+    if not os.path.exists("models/models--Salesforce--blip-vqa-capfilt-large"):
+        with st.spinner("Downloading BLIP model..."):
+            processor_blip = BlipProcessor.from_pretrained("Salesforce/blip-vqa-capfilt-large", cache_dir="models")
+            model_blip = BlipForQuestionAnswering.from_pretrained("Salesforce/blip-vqa-capfilt-large", cache_dir="models")
+        status_placeholder.success("BLIP model downloaded.")
+    else:
+        status_placeholder.success("BLIP model found locally.")
+    time.sleep(2)
+    status_placeholder.empty()
+
+    # Check ViLT model
+    if not os.path.exists("models/models--dandelin--vilt-b32-finetuned-vqa"):
+        with st.spinner("Downloading ViLT model..."):
+            processor_vilt = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
+            model_vilt = ViltForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
+        status_placeholder.success("ViLT model downloaded.")
+    else:
+        status_placeholder.success("ViLT model found locally.")
+    time.sleep(2)
+    status_placeholder.success("All models checked and ready.")
+    time.sleep(2)
+    status_placeholder.empty()
+
+# Check models only once per session
+if 'models_checked' not in st.session_state:
+    check_and_download_models()
+    st.session_state['models_checked'] = True
+
 
 # Streamlit layout
 st.title('Picture Chatbot')
@@ -42,17 +82,17 @@ def get_response(model_name, question, image):
         answer = processor.decode(outputs[0], skip_special_tokens=True)
     
     elif model_name == "ViLT":
-        #answer = "ViLT model is not implemented yet. Please select BLIP."
-        # Load the ViLT processor and model
-        processor = ViLTProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
-        model = ViLTForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
-        
+        processor = ViltProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
+        model = ViltForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
+
         # Prepare the inputs
-        inputs = processor(image, question, return_tensors="pt").to("cpu")
-        
-        # Generate the answer
-        outputs = model.generate(**inputs)
-        answer = processor.decode(outputs[0], skip_special_tokens=True)
+        encoding = processor(image, question, return_tensors="pt")
+
+        # Forward pass
+        outputs = model(**encoding)
+        logits = outputs.logits
+        idx = logits.argmax(-1).item()
+        answer = model.config.id2label[idx]
     return answer
 
 # Maintaining session state for chat messages
