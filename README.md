@@ -31,8 +31,7 @@ source activate myenv && pip install -r requirements.txt
 ## Step 2: Run the Streamlit application
 To run the application you need to navigate to the root directory of the project. Once you are there you need to activate the virtual ennvironment and run the streamlit command. Here is the command to do so -
 ``` bash
-source activate myenv && \
-cd chatbot && streamlit run app.py
+source activate myenv && streamlit run chatbot.py
 ```
 
     Note: You need to do this every time to run the application. Step 1 can be skipped once the virtual environment is created and necessary packages are installed. 

@@ -2,6 +2,7 @@ import os
 from PIL import Image
 import streamlit as st
 from transformers import BlipProcessor, BlipForQuestionAnswering
+from transformers import ViLTProcessor, ViLTForQuestionAnswering
 
 # Create the models directory if it doesn't exist
 if not os.path.exists("models"):
@@ -41,8 +42,17 @@ def get_response(model_name, question, image):
         answer = processor.decode(outputs[0], skip_special_tokens=True)
     
     elif model_name == "ViLT":
-        answer = "ViLT model is not implemented yet. Please select BLIP."
-    
+        #answer = "ViLT model is not implemented yet. Please select BLIP."
+        # Load the ViLT processor and model
+        processor = ViLTProcessor.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
+        model = ViLTForQuestionAnswering.from_pretrained("dandelin/vilt-b32-finetuned-vqa", cache_dir="models")
+        
+        # Prepare the inputs
+        inputs = processor(image, question, return_tensors="pt").to("cpu")
+        
+        # Generate the answer
+        outputs = model.generate(**inputs)
+        answer = processor.decode(outputs[0], skip_special_tokens=True)
     return answer
 
 # Maintaining session state for chat messages
