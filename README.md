@@ -1,85 +1,41 @@
 ## Steps to run the Chatbot Application
 
-## Step 1. Create a new python virtual enviornment
+## Step 1. Create a new virtual enviornment and install necessary packages
 
 Follow these instructions to create a virtual environment for a specified version of Python:
 
 ### Prerequisites
 
-- Ensure Python is installed on your system. You can download it from [python.org](https://www.python.org/downloads/).
-- Verify that `pip` is installed by running `pip --version` in your terminal or command prompt.
+- Make sure [Python](https://www.python.org/downloads/) and [Anaconda](https://www.anaconda.com/) are installed on your machine. Follow the install instructions if the are not installed.
+- You can use following commands to check if they are installed.
+    - ```python --version```
+    - ```conda --version```
 
-### Step 1.1: Install `virtualenv`
 
-If not already installed, you need to install `virtualenv` using pip:
+### Step 1.1: Create new virtual environment using Anaconda
 
-```bash
-pip install virtualenv
-```
-
-### Step 1.2: Create the Virtual Environment
-
-Create a virtual environment specifying the path to the Python interpreter for the version you wish to use. Replace `path/to/python` with the actual path and `myenv` with your desired environment name:
+The following command shows how to create new virtual environment with Python 3.8 in Anaconda. The name of the environment is `myenv`. This step needs to be done **only once** at the beginning.
 
 ```bash
-virtualenv -p /path/to/python myenv
+conda create -n myenv python=3.8
 ```
 
-- **Example for Windows**: If Python 3.8 is installed at `C:\Python38\python.exe`:
-
-  ```bash
-  virtualenv -p C:\Python38\python.exe myenv
-  ```
-
-- **Example for macOS/Linux**: If Python 3.8 is installed and the executable is named `python3.8`:
-
-  ```bash
-  virtualenv -p python3.8 myenv
-  ```
-
-### Step 1.3: Activate the Virtual Environment
-
-Activate the newly created virtual environment:
-
-- **On Windows**:
-
-  ```bash
-  myenv\Scripts\activate
-  ```
-
-- **On macOS/Linux**:
-
-  ```bash
-  source myenv/bin/activate
-  ```
-
-### Step 1.4: Verify Python Version
-
-Check the Python version to ensure the correct version is activated:
-
+### Step 1.2: Activate the Virtual Environment and install necessary packages
+Once the virtual environment is created you can activate it and install necessary packages. 
+This step also needs to be done **only once** at the beginning. 
+Go to the root directory of the project (where you can see `requirements.txt` file) and run the following command.
 ```bash
-python --version
+source activate myenv && pip install -r requirements.txt
 ```
 
-### Step 1.5: Deactivate the Environment
-
-To stop using the virtual environment and revert to the default Python settings:
-
-```bash
-deactivate
+## Step 2: Run the Streamlit application
+To run the application you need to navigate to the root directory of the project. Once you are there you need to activate the virtual ennvironment and run the streamlit command. Here is the command to do so -
+``` bash
+source activate myenv && \
+cd chatbot && streamlit run app.py
 ```
 
-This completes the setup of a Python virtual environment with your specified version.
-
-
-## Step 2: Install necessary packages
-Activate the virtual environment and install packages using this command.
-``` pip install -r requirements.txt ```
-
-## Step 3: Run the Streamlit application
-Run  the application with the following command -
-``` cd chatbot && streamlit run app.py```
-
+Note: you need to do this every time you want to run the application.
 ---
 Notes:
 - It downloads the Hugging face models and caches inside the `models` folders when you run the application for the first time. So, the first run will be slower. In subsequent runs, it will simply load the downloaded models stored locally.
